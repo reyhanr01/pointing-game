@@ -7,16 +7,21 @@ re-aim.
 
 ## How the trick works
 
-A photo's fingers can't move — but the photo itself can rotate. The
-app keeps 12 photos covering 8 pointing angles (plus 2 pointing at the
-viewer for the center). When your cursor settles, it:
+A photo's fingers can't move — but the photo itself can rotate and
+slide. The app keeps a pool of calibrated photos (50+, growing). Every
+photo knows its TRUE finger angle, measured from the actual pixels
+(guessing got angles wrong by up to 18°), plus the exact knuckle
+position that serves as the rotation pivot. When your cursor settles,
+the app:
 
 1. measures the exact angle from the screen center to your cursor,
-2. picks the photo pointing nearest that angle,
-3. rotates the photo by the leftover difference.
+2. picks the loaded photo whose true finger angle is nearest,
+3. rotates the photo about the knuckle by exactly the leftover difference,
+4. slides the photo so the knuckle sits on the aim line, back from your
+   cursor — so the finger's ray passes precisely through the cursor pixel.
 
-The finger lands right on your cursor, every time. The photo is
-oversized (165%) so the swivel never reveals the edges.
+The finger lands right on your cursor, every time, with small natural
+rotations (max ~33°). A blurred copy of the photo fills the screen edges.
 
 ## Run it
 
@@ -29,5 +34,5 @@ hover somewhere, and hold still.
   lock-on ring, and the intro hint
 - `styles.css` — oversized swiveling photos, the filling progress ring
 - `app.js` — cursor settle detection (2.5 s), exact-aim angle math
-- `img/` — 12 photos: 8 pointing directions × varied people/scenes,
-  plus 2 pointing at the camera
+- `img/` — 51 photos: 48 pointing directions × varied people/scenes,
+  plus 3 pointing at the camera (extra photos load lazily after the core set)
