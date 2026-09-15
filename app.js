@@ -13,25 +13,79 @@
 //     the person stays nicely framed, and the photo barely has to tilt.
 
 const PHOTOS = [
-  // src, beta (deg, 0=east, y-down), knuckle, fingertip, crop center
+  // src, beta (deg, 0=east, y-down), knuckle, fingertip, crop center, aspect
   // (cx/cy are object-position values; the cover-crop window follows)
-  { src: "img/point-right.jpg",     beta: -5.56,   kx: 0.793, ky: 0.556, tx: 0.947, ty: 0.541, cx: 0.788, cy: 0.500 },
-  { src: "img/point-right-2.jpg",   beta: -4.57,   kx: 0.631, ky: 0.624, tx: 0.706, ty: 0.618, cx: 0.500, cy: 0.500 },
-  { src: "img/point-left.jpg",      beta: -174.44, kx: 0.207, ky: 0.556, tx: 0.053, ty: 0.541, cx: 0.211, cy: 0.500 },
-  { src: "img/point-left-2.jpg",    beta: -175.43, kx: 0.369, ky: 0.624, tx: 0.294, ty: 0.618, cx: 0.500, cy: 0.500 },
-  { src: "img/point-up.jpg",        beta: -88.91,  kx: 0.308, ky: 0.140, tx: 0.310, ty: 0.035, cx: 0.500, cy: 0.024 },
-  { src: "img/point-down.jpg",      beta: 84.81,   kx: 0.320, ky: 0.838, tx: 0.330, ty: 0.948, cx: 0.500, cy: 0.949 },
-  { src: "img/point-upright.jpg",   beta: -47.77,  kx: 0.505, ky: 0.508, tx: 0.554, ty: 0.454, cx: 0.500, cy: 0.500 },
-  { src: "img/point-upleft.jpg",    beta: -132.23, kx: 0.495, ky: 0.508, tx: 0.446, ty: 0.454, cx: 0.500, cy: 0.500 },
-  { src: "img/point-downright.jpg", beta: 27.43,   kx: 0.794, ky: 0.768, tx: 0.927, ty: 0.837, cx: 0.661, cy: 0.771 },
-  { src: "img/point-downleft.jpg",  beta: 152.57,  kx: 0.206, ky: 0.768, tx: 0.073, ty: 0.837, cx: 0.339, cy: 0.771 },
+  // beta/kx/ky/tx/ty are measured from the actual pixels — never assumed.
+  { src: "img/point-right.jpg",     beta: -5.56,   kx: 0.793, ky: 0.556, tx: 0.947, ty: 0.541, cx: 0.788, cy: 0.500, ar: 0.6667 },
+  { src: "img/point-right-2.jpg",   beta: -4.57,   kx: 0.631, ky: 0.624, tx: 0.706, ty: 0.618, cx: 0.500, cy: 0.500, ar: 0.6667 },
+  { src: "img/point-left.jpg",      beta: -174.44, kx: 0.207, ky: 0.556, tx: 0.053, ty: 0.541, cx: 0.211, cy: 0.500, ar: 0.6667 },
+  { src: "img/point-left-2.jpg",    beta: -175.43, kx: 0.369, ky: 0.624, tx: 0.294, ty: 0.618, cx: 0.500, cy: 0.500, ar: 0.6667 },
+  { src: "img/point-up.jpg",        beta: -88.91,  kx: 0.308, ky: 0.140, tx: 0.310, ty: 0.035, cx: 0.500, cy: 0.024, ar: 0.6667 },
+  { src: "img/point-down.jpg",      beta: 84.81,   kx: 0.320, ky: 0.838, tx: 0.330, ty: 0.948, cx: 0.500, cy: 0.949, ar: 0.6667 },
+  { src: "img/point-upright.jpg",   beta: -47.77,  kx: 0.505, ky: 0.508, tx: 0.554, ty: 0.454, cx: 0.500, cy: 0.500, ar: 0.6667 },
+  { src: "img/point-upleft.jpg",    beta: -132.23, kx: 0.495, ky: 0.508, tx: 0.446, ty: 0.454, cx: 0.500, cy: 0.500, ar: 0.6667 },
+  { src: "img/point-downright.jpg", beta: 27.43,   kx: 0.794, ky: 0.768, tx: 0.927, ty: 0.837, cx: 0.661, cy: 0.771, ar: 0.6667 },
+  { src: "img/point-downleft.jpg",  beta: 152.57,  kx: 0.206, ky: 0.768, tx: 0.073, ty: 0.837, cx: 0.339, cy: 0.771, ar: 0.6667 },
+  // Wave 1 — 38 more calibrated photos (19 generated + 19 mirrors).
+  { src: "img/wave1-a1.jpg", beta: -9.14, kx: 0.866, ky: 0.429, tx: 0.953, ty: 0.415, cx: 1.0, cy: 0.001, ar: 1.5 },
+  { src: "img/wave1-a1-mirror.jpg", beta: -170.86, kx: 0.134, ky: 0.429, tx: 0.047, ty: 0.415, cx: 0.0, cy: 0.001, ar: 1.5 },
+  { src: "img/wave1-a2.jpg", beta: -6.93, kx: 0.718, ky: 0.511, tx: 0.932, ty: 0.485, cx: 1.0, cy: 0.497, ar: 0.6667 },
+  { src: "img/wave1-a2-mirror.jpg", beta: -173.07, kx: 0.282, ky: 0.511, tx: 0.068, ty: 0.485, cx: 0.0, cy: 0.497, ar: 0.6667 },
+  { src: "img/wave1-a3.jpg", beta: -3.27, kx: 0.795, ky: 0.455, tx: 0.935, ty: 0.447, cx: 1.0, cy: 0.422, ar: 0.6667 },
+  { src: "img/wave1-a3-mirror.jpg", beta: -176.73, kx: 0.205, ky: 0.455, tx: 0.065, ty: 0.447, cx: 0.0, cy: 0.422, ar: 0.6667 },
+  { src: "img/wave1-a4.jpg", beta: -9.46, kx: 0.873, ky: 0.354, tx: 0.957, ty: 0.34, cx: 1.0, cy: 0.0, ar: 1.5 },
+  { src: "img/wave1-a4-mirror.jpg", beta: -170.54, kx: 0.127, ky: 0.354, tx: 0.043, ty: 0.34, cx: 0.0, cy: 0.0, ar: 1.5 },
+  { src: "img/wave1-b1.jpg", beta: -48.37, kx: 0.835, ky: 0.232, tx: 0.915, ty: 0.142, cx: 1.0, cy: 0.0, ar: 0.6667 },
+  { src: "img/wave1-b1-mirror.jpg", beta: -131.63, kx: 0.165, ky: 0.232, tx: 0.085, ty: 0.142, cx: 0.0, cy: 0.0, ar: 0.6667 },
+  { src: "img/wave1-b2.jpg", beta: -55.24, kx: 0.86, ky: 0.208, tx: 0.928, ty: 0.11, cx: 1.0, cy: 0.0, ar: 0.6667 },
+  { src: "img/wave1-b2-mirror.jpg", beta: -124.76, kx: 0.14, ky: 0.208, tx: 0.072, ty: 0.11, cx: 0.0, cy: 0.0, ar: 0.6667 },
+  { src: "img/wave1-b3.jpg", beta: -54.67, kx: 0.835, ky: 0.238, tx: 0.908, ty: 0.135, cx: 1.0, cy: 0.0, ar: 0.6667 },
+  { src: "img/wave1-b3-mirror.jpg", beta: -125.33, kx: 0.165, ky: 0.238, tx: 0.092, ty: 0.135, cx: 0.0, cy: 0.0, ar: 0.6667 },
+  { src: "img/wave1-b4.jpg", beta: -43.84, kx: 0.771, ky: 0.256, tx: 0.897, ty: 0.135, cx: 1.0, cy: 0.013, ar: 0.6667 },
+  { src: "img/wave1-b4-mirror.jpg", beta: -136.16, kx: 0.229, ky: 0.256, tx: 0.103, ty: 0.135, cx: 0.0, cy: 0.013, ar: 0.6667 },
+  { src: "img/wave1-c1.jpg", beta: 46.42, kx: 0.87, ky: 0.77, tx: 0.929, ty: 0.832, cx: 1.0, cy: 1.0, ar: 1.5 },
+  { src: "img/wave1-c1-mirror.jpg", beta: 133.58, kx: 0.13, ky: 0.77, tx: 0.071, ty: 0.832, cx: 0.0, cy: 1.0, ar: 1.5 },
+  { src: "img/wave1-c2.jpg", beta: 38.9, kx: 0.833, ky: 0.794, tx: 0.921, ty: 0.865, cx: 1.0, cy: 1.0, ar: 1.5 },
+  { src: "img/wave1-c2-mirror.jpg", beta: 141.1, kx: 0.167, ky: 0.794, tx: 0.079, ty: 0.865, cx: 0.0, cy: 1.0, ar: 1.5 },
+  { src: "img/wave1-c3.jpg", beta: 54.54, kx: 0.814, ky: 0.831, tx: 0.866, ty: 0.904, cx: 1.0, cy: 1.0, ar: 1.5 },
+  { src: "img/wave1-c3-mirror.jpg", beta: 125.46, kx: 0.186, ky: 0.831, tx: 0.134, ty: 0.904, cx: 0.0, cy: 1.0, ar: 1.5 },
+  { src: "img/wave1-c4.jpg", beta: 19.17, kx: 0.7, ky: 0.73, tx: 0.91, ty: 0.803, cx: 0.5, cy: 0.871, ar: 0.5 },
+  { src: "img/wave1-c4-mirror.jpg", beta: 160.83, kx: 0.3, ky: 0.73, tx: 0.09, ty: 0.803, cx: 0.5, cy: 0.871, ar: 0.5 },
+  { src: "img/wave1-d1.jpg", beta: 83.73, kx: 0.485, ky: 0.731, tx: 0.504, ty: 0.904, cx: 0.487, cy: 1.0, ar: 1.0 },
+  { src: "img/wave1-d1-mirror.jpg", beta: 96.27, kx: 0.515, ky: 0.731, tx: 0.496, ty: 0.904, cx: 0.513, cy: 1.0, ar: 1.0 },
+  { src: "img/wave1-d2.jpg", beta: 96.28, kx: 0.485, ky: 0.69, tx: 0.461, ty: 0.908, cx: 0.438, cy: 1.0, ar: 1.0 },
+  { src: "img/wave1-d2-mirror.jpg", beta: 83.72, kx: 0.515, ky: 0.69, tx: 0.539, ty: 0.908, cx: 0.562, cy: 1.0, ar: 1.0 },
+  { src: "img/wave1-d3.jpg", beta: 83.27, kx: 0.444, ky: 0.682, tx: 0.467, ty: 0.877, cx: 0.398, cy: 1.0, ar: 1.0 },
+  { src: "img/wave1-d3-mirror.jpg", beta: 96.73, kx: 0.556, ky: 0.682, tx: 0.533, ty: 0.877, cx: 0.602, cy: 1.0, ar: 1.0 },
+  { src: "img/wave1-d4.jpg", beta: 86.52, kx: 0.508, ky: 0.737, tx: 0.519, ty: 0.918, cx: 0.586, cy: 1.0, ar: 1.0 },
+  { src: "img/wave1-d4-mirror.jpg", beta: 93.48, kx: 0.492, ky: 0.737, tx: 0.481, ty: 0.918, cx: 0.414, cy: 1.0, ar: 1.0 },
+  { src: "img/wave1-m1.jpg", beta: -72.78, kx: 0.305, ky: 0.168, tx: 0.336, ty: 0.068, cx: 0.09, cy: 0.0, ar: 1.0 },
+  { src: "img/wave1-m1-mirror.jpg", beta: -107.22, kx: 0.695, ky: 0.168, tx: 0.664, ty: 0.068, cx: 0.91, cy: 0.0, ar: 1.0 },
+  { src: "img/wave1-m2.jpg", beta: -40.91, kx: 0.845, ky: 0.245, tx: 0.92, ty: 0.18, cx: 1.0, cy: 0.04, ar: 0.6667 },
+  { src: "img/wave1-m2-mirror.jpg", beta: -139.09, kx: 0.155, ky: 0.245, tx: 0.08, ty: 0.18, cx: 0.0, cy: 0.04, ar: 0.6667 },
+  { src: "img/wave1-m3.jpg", beta: 34.88, kx: 0.875, ky: 0.76, tx: 0.941, ty: 0.806, cx: 1.0, cy: 1.0, ar: 1.0 },
+  { src: "img/wave1-m3-mirror.jpg", beta: 145.12, kx: 0.125, ky: 0.76, tx: 0.059, ty: 0.806, cx: 0.0, cy: 1.0, ar: 1.0 },
 ];
-const CAMERA = ["img/point-camera.jpg", "img/point-camera-2.jpg"]; // cursor near center
+const CAMERA = ["img/point-camera.jpg", "img/point-camera-2.jpg", "img/wave1-m4.jpg"]; // cursor near center
 
-const IMG_AR = 1280 / 1920; // source photos are portrait
+const IMG_AR = 1280 / 1920; // default source aspect (portrait); photos carry their own `ar`
 const S = 1.05; // sharp layer is slightly oversized; blurred bg covers the rest
 const SETTLE_MS = 2500; // how long the cursor must sit still
 const CIRC = 2 * Math.PI * 22; // lock-on ring circumference (r=22)
+
+// Photo loading is lazy: the first 10 load immediately, the rest trickle in
+// afterwards so the page is usable instantly. Aim only picks loaded photos.
+const loaded = {};
+function preload(src, delay) {
+  const im = new Image();
+  im.onload = () => {
+    loaded[src] = 1;
+  };
+  if (delay) setTimeout(() => (im.src = src), delay);
+  else im.src = src;
+}
+PHOTOS.forEach((p, i) => preload(p.src, i < 10 ? 0 : 1500 + (i - 10) * 120));
+CAMERA.forEach((src) => preload(src, 0));
 
 const layerA = document.getElementById("layerA");
 const layerB = document.getElementById("layerB");
@@ -51,14 +105,6 @@ let settleStart = 0;
 let rafId = null;
 const cursor = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
-// Warm the cache so swaps are instant.
-PHOTOS.map((p) => p.src)
-  .concat(CAMERA)
-  .forEach((src) => {
-    const img = new Image();
-    img.src = src;
-  });
-
 function wrapDeg(d) {
   d = d % 360;
   if (d > 180) d -= 360;
@@ -70,12 +116,13 @@ function wrapDeg(d) {
 // the object-fit: cover crop on this viewport.
 // (object-position q% puts the crop window at [q*(1-f), q*(1-f)+f].)
 function toEl(fx, fy, p) {
+  const ar = p.ar || IMG_AR;
   const A = window.innerWidth / window.innerHeight;
-  if (A >= IMG_AR) {
-    const h = IMG_AR / A; // visible height fraction of the image
+  if (A >= ar) {
+    const h = ar / A; // visible height fraction of the image
     return { x: fx, y: (fy - p.cy * (1 - h)) / h };
   }
-  const w = A / IMG_AR; // visible width fraction of the image
+  const w = A / ar; // visible width fraction of the image
   return { x: (fx - p.cx * (1 - w)) / w, y: fy };
 }
 
@@ -99,9 +146,13 @@ function aimFor(cx, cy) {
     return { src: CAMERA[(Math.random() * CAMERA.length) | 0], cam: true };
   }
   const theta = (Math.atan2(dy, dx) * 180) / Math.PI;
-  let best = PHOTOS[0];
+  // Prefer fully-loaded photos so the swap is instant; fall back to the
+  // core set if the page just opened and nothing is cached yet.
+  const pool = PHOTOS.filter((p) => loaded[p.src]);
+  const candidates = pool.length ? pool : PHOTOS.slice(0, 10);
+  let best = candidates[0];
   let bestD = 999;
-  for (const p of PHOTOS) {
+  for (const p of candidates) {
     const d = Math.abs(wrapDeg(theta - p.beta));
     if (d < bestD) {
       bestD = d;
