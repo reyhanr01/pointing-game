@@ -1,5 +1,7 @@
 /* They Point At You — a full-screen photo of people pointing.
-   Hold the cursor still and the photo swaps to the one pointing at it. */
+   Hold the cursor still and the photo swivels so the finger lands
+   exactly on the cursor. A blurred copy of the photo fills the
+   background so the swivel never shows an edge. */
 
 * { box-sizing: border-box; }
 
@@ -13,20 +15,44 @@ html, body {
   cursor: crosshair;
 }
 
-.photo {
+.layer {
   position: fixed;
-  left: 50%;
-  top: 50%;
-  width: 165%;
-  height: 165%;
-  object-fit: cover;
+  inset: 0;
   opacity: 0;
-  transform: translate(-50%, -50%);
-  /* The photo is oversized so it can swivel ±22.5° without showing edges */
-  transition: opacity 0.9s ease, transform 0.8s cubic-bezier(0.3, 1.25, 0.5, 1);
+  transition: opacity 0.9s ease;
 }
 
-.photo.visible { opacity: 1; }
+.layer.visible { opacity: 1; }
+
+.mover {
+  position: absolute;
+  inset: 0;
+  /* Slides the photo so the pointing hand lands in a good spot */
+  transition: transform 0.8s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+
+.layer .bg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 130%;
+  height: 130%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  filter: blur(36px) brightness(0.55) saturate(1.25);
+}
+
+.layer .sharp {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 105%;
+  height: 105%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  /* Rotation pivots around the finger's knuckle (set per photo in JS) */
+  transition: transform 0.8s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
 
 /* Lock-on ring that fills while the cursor settles */
 #ring {
