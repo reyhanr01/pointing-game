@@ -7,9 +7,20 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Two stacked photos so we can crossfade between pointing directions -->
-  <img id="photoA" class="photo visible" src="img/point-camera.jpg" alt="People pointing at your cursor" />
-  <img id="photoB" class="photo" src="img/point-camera.jpg" alt="People pointing at your cursor" />
+  <!-- Two stacked layers so we can crossfade. Each layer has a blurred
+       ambient background plus the sharp photo that swivels to aim. -->
+  <div class="layer visible" id="layerA">
+    <div class="mover" id="moverA">
+      <img class="bg" id="bgA" src="img/point-camera.jpg" alt="" />
+      <img class="sharp" id="photoA" src="img/point-camera.jpg" alt="People pointing at your cursor" />
+    </div>
+  </div>
+  <div class="layer" id="layerB">
+    <div class="mover" id="moverB">
+      <img class="bg" id="bgB" src="img/point-camera.jpg" alt="" />
+      <img class="sharp" id="photoB" src="img/point-camera.jpg" alt="People pointing at your cursor" />
+    </div>
+  </div>
 
   <!-- The "locking on" ring that fills while your cursor settles -->
   <div id="ring" class="hidden">
