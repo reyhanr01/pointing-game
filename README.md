@@ -8,7 +8,7 @@ re-aim.
 ## How the trick works
 
 A photo's fingers can't move — but the photo itself can rotate and
-slide. The app keeps a pool of calibrated photos (80+, growing). Every
+slide. The app keeps a pool of 115 calibrated photos. Every
 photo knows its TRUE finger angle, measured from the actual pixels
 (guessing got angles wrong by up to 18°), plus the exact knuckle
 position that serves as the rotation pivot. When your cursor settles,
@@ -34,5 +34,5 @@ hover somewhere, and hold still.
   lock-on ring, and the intro hint
 - `styles.css` — oversized swiveling photos, the filling progress ring
 - `app.js` — cursor settle detection (2.5 s), exact-aim angle math
-- `img/` — 83 photos: 80 pointing directions × varied people/scenes,
+- `img/` — 115 photos: 112 pointing directions × varied people/scenes,
   plus 3 pointing at the camera (extra photos load lazily after the core set)
